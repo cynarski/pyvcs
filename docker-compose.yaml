@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  vcs:
+    build: .
+    volumes:
+      - .:/app            # ← montujesz bieżący katalog do /app
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    command: bash -lc "pip install -e . && bash"
