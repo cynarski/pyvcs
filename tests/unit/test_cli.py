@@ -11,7 +11,7 @@ def test_with_standard_command(capsys):
     captured = capsys.readouterr()
 
     assert exit_code == 0
-    assert "init command is not implemented yet" in captured.out
+    assert "Initialized empty PyVCS repository in" in captured.out
 
 
 def test_without_command_displays_help(capsys):

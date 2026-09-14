@@ -41,3 +41,47 @@ def test_head_file(tmp_path):
     repo = Repository(str(tmp_path))
 
     assert repo.head_file == tmp_path / ".vcs" / "HEAD"
+
+
+def test_init_creates_suitable_dirs_and_files(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    assert repo.repo_path.is_dir()
+    assert repo.objects_path.is_dir()
+    assert repo.branches_path.is_dir()
+    assert repo.head_file.is_file()
+    assert repo.head_file.read_text(encoding="utf-8") == "master"
+    assert not repo.index_file.exists()
+
+
+def test_reinit_does_not_overwrite_head(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    repo.head_file.write_text(
+        "feature-login\n",
+        encoding="utf-8",
+    )
+
+    Repository.init(str(tmp_path))
+
+    assert repo.head_file.read_text(encoding="utf-8") == "feature-login\n"
+
+
+def test_init_does_not_modify_existing_files(tmp_path):
+    file = tmp_path / "example.txt"
+    file.write_text("hello", encoding="utf-8")
+
+    Repository.init(str(tmp_path))
+
+    assert file.read_text(encoding="utf-8") == "hello"
+
+
+def test_init_creates_missing_worktree(tmp_path):
+    project_path = tmp_path / "my-project"
+
+    repo = Repository.init(str(project_path))
+
+    assert repo.path.is_dir()
+
+
+
