@@ -31,7 +31,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "init":
-        repo = Repository.init()
+        repo = Repository.init(args.path)
         print(f"Initialized empty PyVCS repository in {repo.repo_path}")
         return 0
     raise AssertionError(f"Unhandled command: {args.command}")
