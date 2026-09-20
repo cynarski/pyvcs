@@ -17,7 +17,7 @@ class Repository:
     def __init__(self, path: str = ".") -> None:
         self.path = Path(path or ".").resolve()
 
-        self.repo_path = self.path / ".vcs"
+        self.repo_path = self.path / ".pyvcs"
         self.index_file = self.repo_path / "index"
         self.objects_path = self.repo_path / "objects"
         self.branches_path = self.repo_path / "branches"
@@ -37,7 +37,7 @@ class Repository:
 
         if not repo.head_file.exists():
             repo.head_file.write_text(
-                f"{DEFAULT_BRANCH}",
+                f"{DEFAULT_BRANCH}\n",
                 encoding="utf-8",
             )
 

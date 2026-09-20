@@ -30,8 +30,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.print_help()
         return 0
 
-    if args.command == "init":
-        repo = Repository.init(args.path)
-        print(f"Initialized empty PyVCS repository in {repo.repo_path}")
-        return 0
+    # if args.command == "init":
+    #     repo = Repository.init(args.path)
+    #     print(f"Initialized empty PyVCS repository in {repo.repo_path}")
+    #     return 0
+    match args.command:
+        case "init":
+            repo = Repository.init(args.path)
+            print(f"Initialized empty PyVCS repository in {repo.repo_path}")
+            return 0
+        case "status":
+            pass
+        case _:
+            print(1234)
+
     raise AssertionError(f"Unhandled command: {args.command}")
