@@ -1,8 +1,10 @@
 from pathlib import Path
 from typing import Self
 
-DEFAULT_BRANCH = "master"
+from pyvcs.exceptions import RepositoryNotFoundError
 
+DEFAULT_BRANCH = "master"
+REPO_DIR_NAME = ".pyvcs"
 
 # hooks – folder zawierający skrypty, uruchamiane automatycznie po wykonaniu określonych akcji,
 # info – folder zawierający plik exclude z listą ignorowanych plików,
@@ -17,7 +19,7 @@ class Repository:
     def __init__(self, path: str = ".") -> None:
         self.path = Path(path or ".").resolve()
 
-        self.repo_path = self.path / ".pyvcs"
+        self.repo_path = self.path / REPO_DIR_NAME
         self.index_file = self.repo_path / "index"
         self.objects_path = self.repo_path / "objects"
         self.branches_path = self.repo_path / "branches"
@@ -42,3 +44,24 @@ class Repository:
             )
 
         return repo
+
+
+    @classmethod
+    def find(cls, start: str = ".") -> Self:
+        current = Path(start).resolve()
+
+        if current.is_file():
+            current = current.parent
+
+        while True:
+            repo_dir = current / REPO_DIR_NAME
+
+            if repo_dir.is_dir():
+                return cls(str(current))
+
+            if current.parent == current:
+                raise RepositoryNotFoundError(
+                    f"Not a PyVCS repository: {start}"
+                )
+
+            current = current.parent
