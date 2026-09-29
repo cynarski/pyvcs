@@ -2,6 +2,7 @@ import argparse
 from collections.abc import Sequence
 
 from pyvcs.repository import Repository
+from pyvcs.working_tree import snapshot_worktree
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -11,6 +12,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", title="commands")
 
     init_parser = subparsers.add_parser("init", help="Initialize a new PyVCS repository")
+
+    init_parser = subparsers.add_parser("status", help="Find changes in repository")
 
     init_parser.add_argument(
         "path",
@@ -40,7 +43,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Initialized empty PyVCS repository in {repo.repo_path}")
             return 0
         case "status":
-            pass
+            repo = Repository.find()
+            print(snapshot_worktree(repo))
         case _:
             print(1234)
 
