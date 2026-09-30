@@ -2,7 +2,9 @@ import argparse
 from collections.abc import Sequence
 
 from pyvcs.repository import Repository
-from pyvcs.working_tree import snapshot_worktree
+from pyvcs.status import get_status
+from pyvcs.terminal import print_status
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -52,7 +54,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         case "status":
             repo = Repository.find()
-            print(snapshot_worktree(repo))
+            status = get_status(repo)
+            print_status(status)
             return 0
         case _:
             raise AssertionError(f"Unhandled command: {args.command}")

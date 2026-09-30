@@ -35,7 +35,9 @@ class Repository:
         repo.repo_path.mkdir(parents=True, exist_ok=True)
         repo.objects_path.mkdir(parents=True, exist_ok=True)
         repo.branches_path.mkdir(parents=True, exist_ok=True)
-        # repo.index_file.touch(exist_ok=True)
+        
+        if not repo.index_file.exists():
+            repo.index_file.write_text("{}\n", encoding="utf-8")
 
         if not repo.head_file.exists():
             repo.head_file.write_text(
