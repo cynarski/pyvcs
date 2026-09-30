@@ -52,7 +52,7 @@ def test_init_creates_suitable_dirs_and_files(tmp_path):
     assert repo.branches_path.is_dir()
     assert repo.head_file.is_file()
     assert repo.head_file.read_text(encoding="utf-8") == "master\n"
-    assert not repo.index_file.exists()
+    assert repo.index_file.exists()
 
 
 def test_reinit_does_not_overwrite_head(tmp_path):
