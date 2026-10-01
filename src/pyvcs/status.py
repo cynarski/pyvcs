@@ -12,10 +12,7 @@ class Status:
     untracked: list[str]
 
 
-def compare_snapshots(
-    index: dict[str, str],
-    worktree: dict[str, str]
-) -> Status:
+def compare_snapshots(index: dict[str, str], worktree: dict[str, str]) -> Status:
     modified, deleted, untracked = [], [], []
 
     for path, worktree_hash in worktree.items():
@@ -33,6 +30,7 @@ def compare_snapshots(
         deleted=sorted(deleted),
         untracked=sorted(untracked),
     )
+
 
 def get_status(repo: Repository) -> Status:
     index = read_index(repo)

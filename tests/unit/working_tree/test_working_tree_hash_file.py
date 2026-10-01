@@ -2,6 +2,7 @@ from hashlib import sha256
 
 from pyvcs.working_tree import hash_file
 
+
 def test_hash_file_returns_sha256_for_text_file(tmp_path):
     file_path = tmp_path / "hello.txt"
     file_path.write_text("hello", encoding="utf-8")
@@ -55,6 +56,7 @@ def test_hash_file_supports_binary_file(tmp_path):
     expected = sha256(content).hexdigest()
 
     assert result == expected
+
 
 def test_hash_file_supports_large_file(tmp_path):
     file_path = tmp_path / "large.bin"

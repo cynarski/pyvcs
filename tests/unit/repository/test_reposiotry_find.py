@@ -7,6 +7,7 @@ from pyvcs.exceptions import RepositoryNotFoundError
 
 pytestmark = pytest.mark.unit  # potem można zrobić pytest -m unit
 
+
 def test_init_creates_missing_worktree(tmp_path):
     project_path = tmp_path / "my-project"
 

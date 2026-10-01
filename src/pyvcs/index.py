@@ -7,7 +7,7 @@ def read_index(repo: Repository) -> dict[str, str]:
     if not repo.index_file.exists():
         return {}
 
-    content = repo.index_file.read_text(encoding='utf-8')
+    content = repo.index_file.read_text(encoding="utf-8")
 
     if not content.strip():
         return {}

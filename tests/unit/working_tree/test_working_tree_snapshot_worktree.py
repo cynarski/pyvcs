@@ -42,10 +42,8 @@ def test_snapshot_ignores_repository_metadata(tmp_path):
     assert "hello.txt" in snapshot
     assert ".pyvcs/HEAD" not in snapshot
 
-    assert all(
-        not path.startswith(".pyvcs/")
-        for path in snapshot
-    )
+    assert all(not path.startswith(".pyvcs/") for path in snapshot)
+
 
 def test_empty_worktree_returns_empty_snapshot(tmp_path):
     repo = Repository.init(str(tmp_path))

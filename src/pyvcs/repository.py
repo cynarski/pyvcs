@@ -15,6 +15,7 @@ REPO_DIR_NAME = ".pyvcs"
 # HEAD – plik z nazwą bieżącej gałęzi,
 # index – plik binarny zawierający listę plików w przechowalni.
 
+
 class Repository:
     def __init__(self, path: str = ".") -> None:
         self.path = Path(path or ".").resolve()
@@ -25,7 +26,6 @@ class Repository:
         self.branches_path = self.repo_path / "branches"
         self.head_file = self.repo_path / "HEAD"
 
-
     @classmethod
     def init(cls, path: str = ".") -> Self:
 
@@ -35,7 +35,7 @@ class Repository:
         repo.repo_path.mkdir(parents=True, exist_ok=True)
         repo.objects_path.mkdir(parents=True, exist_ok=True)
         repo.branches_path.mkdir(parents=True, exist_ok=True)
-        
+
         if not repo.index_file.exists():
             repo.index_file.write_text("{}\n", encoding="utf-8")
 
@@ -46,7 +46,6 @@ class Repository:
             )
 
         return repo
-
 
     @classmethod
     def find(cls, start: str = ".") -> Self:
@@ -62,8 +61,6 @@ class Repository:
                 return cls(str(current))
 
             if current.parent == current:
-                raise RepositoryNotFoundError(
-                    f"Not a PyVCS repository: {start}"
-                )
+                raise RepositoryNotFoundError(f"Not a PyVCS repository: {start}")
 
             current = current.parent

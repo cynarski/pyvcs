@@ -6,7 +6,8 @@ from pyvcs.exceptions import RepositoryNotFoundError
 
 CHUNK_SIZE = 64 * 1024
 
-def hash_file(file_path: Path)-> str:
+
+def hash_file(file_path: Path) -> str:
     digest = sha256()
 
     with file_path.open("rb") as file:
@@ -15,11 +16,12 @@ def hash_file(file_path: Path)-> str:
 
     return digest.hexdigest()
 
+
 def snapshot_worktree(repo: Repository) -> dict[str, str]:
     snapshot: dict[str, str] = {}
 
     paths = sorted(
-        repo.path.rglob("*"), # find everythin in repo path
+        repo.path.rglob("*"),  # find everythin in repo path
         key=lambda path: path.relative_to(repo.path).as_posix(),
     )
 
