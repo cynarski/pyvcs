@@ -9,3 +9,7 @@ wheels/
 # Virtual environments
 .venv
 .pyvcs
+
+# Jenkins integration runs
+ci-results/
+ci-run-*/

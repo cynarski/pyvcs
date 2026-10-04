@@ -1,0 +1,9 @@
+{
+  "containers": 2,
+  "timeout_minutes": 10,
+  "tests": [
+    {"nodeid": "tests/integration/test_cli.py::test_help", "repeat": 2},
+    {"nodeid": "tests/integration/test_cli.py::test_no_arguments", "repeat": 1},
+    {"nodeid": "tests/integration/test_cli.py::test_unknown_command", "repeat": 1}
+  ]
+}
