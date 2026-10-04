@@ -1,9 +1,11 @@
+import sys
 import argparse
 from collections.abc import Sequence
 
-from pyvcs.repository import Repository
 from pyvcs.status import get_status
 from pyvcs.terminal import print_status
+from pyvcs.repository import Repository
+from pyvcs.exceptions import RepositoryNotFoundError
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,7 +55,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Initialized empty PyVCS repository in {repo.repo_path}")
             return 0
         case "status":
-            repo = Repository.find()
+            try:
+                repo = Repository.find()
+            except RepositoryNotFoundError:
+                print("fatal: not a PyVCS repository", file=sys.stderr)
+                return 1
+
             status = get_status(repo)
             print_status(status)
             return 0
