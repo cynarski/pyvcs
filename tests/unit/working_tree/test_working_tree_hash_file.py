@@ -1,71 +1,93 @@
-from hashlib import sha256
+import pytest
 
-from pyvcs.working_tree import hash_file
+from pyvcs.repository import Repository
+from pyvcs.working_tree import hash_file, snapshot_worktree
+
+pytestmark = pytest.mark.unit
 
 
-def test_hash_file_returns_sha256_for_text_file(tmp_path):
-    file_path = tmp_path / "hello.txt"
+def test_empty_working_tree(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    assert snapshot_worktree(repo) == {}
+
+
+def test_working_tree_with_one_file(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    file_path = tmp_path / "a.txt"
     file_path.write_text("hello", encoding="utf-8")
 
-    result = hash_file(file_path)
-
-    expected = sha256(b"hello").hexdigest()
-
-    assert result == expected
+    assert snapshot_worktree(repo) == {
+        "a.txt": hash_file(file_path),
+    }
 
 
-def test_same_content_produces_same_hash(tmp_path):
-    first_file = tmp_path / "first.txt"
-    second_file = tmp_path / "second.txt"
+def test_working_tree_with_nested_file(tmp_path):
+    repo = Repository.init(str(tmp_path))
 
-    first_file.write_text("same content", encoding="utf-8")
-    second_file.write_text("same content", encoding="utf-8")
+    directory = tmp_path / "src"
+    directory.mkdir()
 
-    assert hash_file(first_file) == hash_file(second_file)
+    file_path = directory / "main.py"
+    file_path.write_text("print('hello')", encoding="utf-8")
 
-
-def test_different_content_produces_different_hash(tmp_path):
-    first_file = tmp_path / "first.txt"
-    second_file = tmp_path / "second.txt"
-
-    first_file.write_text("first content", encoding="utf-8")
-    second_file.write_text("second content", encoding="utf-8")
-
-    assert hash_file(first_file) != hash_file(second_file)
+    assert snapshot_worktree(repo) == {
+        "src/main.py": hash_file(file_path),
+    }
 
 
-def test_hash_file_supports_empty_file(tmp_path):
-    file_path = tmp_path / "empty.txt"
-    file_path.write_bytes(b"")
+def test_working_tree_with_multiple_files(tmp_path):
+    repo = Repository.init(str(tmp_path))
 
-    result = hash_file(file_path)
+    a = tmp_path / "a.txt"
+    b = tmp_path / "b.txt"
 
-    expected = sha256(b"").hexdigest()
+    a.write_text("AAA", encoding="utf-8")
+    b.write_text("BBB", encoding="utf-8")
 
-    assert result == expected
-
-
-def test_hash_file_supports_binary_file(tmp_path):
-    file_path = tmp_path / "image.bin"
-    content = b"\x00\x01\xff\xab\x10\x20"
-
-    file_path.write_bytes(content)
-
-    result = hash_file(file_path)
-
-    expected = sha256(content).hexdigest()
-
-    assert result == expected
+    assert snapshot_worktree(repo) == {
+        "a.txt": hash_file(a),
+        "b.txt": hash_file(b),
+    }
 
 
-def test_hash_file_supports_large_file(tmp_path):
-    file_path = tmp_path / "large.bin"
-    content = b"a" * (64 * 1024 + 100)
+def test_repository_directory_is_ignored(tmp_path):
+    repo = Repository.init(str(tmp_path))
 
-    file_path.write_bytes(content)
+    normal_file = tmp_path / "a.txt"
+    normal_file.write_text("AAA", encoding="utf-8")
 
-    result = hash_file(file_path)
+    internal_file = repo.repo_path / "internal"
+    internal_file.write_text("should be ignored", encoding="utf-8")
 
-    expected = sha256(content).hexdigest()
+    snapshot = snapshot_worktree(repo)
 
-    assert result == expected
+    assert "a.txt" in snapshot
+    assert ".pyvcs/internal" not in snapshot
+
+
+def test_binary_file(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    file_path = tmp_path / "binary.bin"
+    file_path.write_bytes(b"\x00\x01\x02\xff")
+
+    assert snapshot_worktree(repo) == {
+        "binary.bin": hash_file(file_path),
+    }
+
+
+def test_content_change_changes_hash(tmp_path):
+    repo = Repository.init(str(tmp_path))
+
+    file_path = tmp_path / "a.txt"
+    file_path.write_text("before", encoding="utf-8")
+
+    before = snapshot_worktree(repo)["a.txt"]
+
+    file_path.write_text("after", encoding="utf-8")
+
+    after = snapshot_worktree(repo)["a.txt"]
+
+    assert before != after

@@ -1,6 +1,7 @@
 import pytest
 
 from pyvcs.cli import main
+from pyvcs.repository import Repository
 
 pytestmark = pytest.mark.unit  # potem można zrobić pytest -m unit
 
@@ -45,3 +46,38 @@ def test_unknown_command_fails(capsys):
     captured = capsys.readouterr()
 
     assert "usage:" in captured.err
+
+def test_status_outside_repository_returns_error(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+
+    exit_code = main(["status"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert captured.out == ""
+    assert captured.err == "fatal: not a PyVCS repository\n"
+
+def test_status_inside_repository_returns_success(tmp_path, monkeypatch, capsys):
+    Repository.init(str(tmp_path))
+    monkeypatch.chdir(tmp_path)
+
+    exit_code = main(["status"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "Nothing to commit, working tree clean" in captured.out
+
+
+def test_status_with_changes_still_returns_success(tmp_path, monkeypatch, capsys):
+    Repository.init(str(tmp_path))
+    (tmp_path / "new.txt").write_text("hello", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+
+    exit_code = main(["status"])
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "new.txt" in captured.out
