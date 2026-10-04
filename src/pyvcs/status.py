@@ -18,7 +18,7 @@ def compare_snapshots(index: dict[str, str], worktree: dict[str, str]) -> Status
     for path, worktree_hash in worktree.items():
         if path not in index:
             untracked.append(path)
-        elif path[index] != worktree_hash:
+        elif index[path] != worktree_hash:
             modified.append(path)
 
     for path in index:
