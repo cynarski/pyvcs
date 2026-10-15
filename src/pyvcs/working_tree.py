@@ -1,20 +1,17 @@
 from hashlib import sha256
 from pathlib import Path
 
+from pyvcs.objects import Blob
 from pyvcs.repository import Repository
-from pyvcs.exceptions import RepositoryNotFoundError
 
 CHUNK_SIZE = 64 * 1024
 
 
 def hash_file(file_path: Path) -> str:
-    digest = sha256()
+    data = file_path.read_bytes()
+    blob = Blob(data)
 
-    with file_path.open("rb") as file:
-        while chunk := file.read(CHUNK_SIZE):
-            digest.update(chunk)
-
-    return digest.hexdigest()
+    return sha256(blob.serialize()).hexdigest()
 
 
 def snapshot_worktree(repo: Repository) -> dict[str, str]:
