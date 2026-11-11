@@ -10,6 +10,7 @@ class ObjectStorage:
         self.repo = repo
 
 
+    @staticmethod
     def calculate_object_id(self, data: bytes) -> str:
         return hashlib.sha256(data).hexdigest()
 

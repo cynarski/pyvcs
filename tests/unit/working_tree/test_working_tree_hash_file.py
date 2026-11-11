@@ -1,6 +1,7 @@
 import pytest
 
 from pyvcs.repository import Repository
+from pyvcs.objects import Blob
 from pyvcs.working_tree import hash_file, snapshot_worktree
 
 pytestmark = pytest.mark.unit
@@ -91,3 +92,13 @@ def test_content_change_changes_hash(tmp_path):
     after = snapshot_worktree(repo)["a.txt"]
 
     assert before != after
+
+def test_hash_file_matches_blob_object_id(tmp_path):
+    file_path = tmp_path / "hello.txt"
+    file_path.write_bytes(b"hello")
+
+    expected = ObjectStore.calculate_object_id(
+        Blob(b"hello").serialize()
+    )
+
+    assert hash_file(file_path) == expected

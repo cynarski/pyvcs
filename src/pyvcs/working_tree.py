@@ -3,15 +3,14 @@ from pathlib import Path
 
 from pyvcs.objects import Blob
 from pyvcs.repository import Repository
+from pyvcs.object_storage import ObjectStorage
 
 CHUNK_SIZE = 64 * 1024
 
 
 def hash_file(file_path: Path) -> str:
-    data = file_path.read_bytes()
-    blob = Blob(data)
-
-    return sha256(blob.serialize()).hexdigest()
+    blob = Blob(file_path.read_bytes())
+    return ObjectStore.calculate_object_id(blob.serialize())
 
 
 def snapshot_worktree(repo: Repository) -> dict[str, str]:
